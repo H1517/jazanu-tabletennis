@@ -9,7 +9,15 @@
     
     <style>
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; }
-        .header { text-align: center; margin-bottom: 30px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        
+        /* تعديلات الترويسة والشعار */
+        .header { position: relative; text-align: center; margin-bottom: 30px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .uni-logo { position: absolute; top: 20px; left: 20px; width: 90px; height: auto; }
+        
+        @media (max-width: 600px) {
+            .uni-logo { position: static; display: block; margin: 0 auto 15px auto; width: 80px; }
+        }
+
         .admin-btn { background-color: #007bff; color: white; border: none; padding: 10px 25px; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; margin-bottom: 10px; transition: 0.3s; margin: 0 5px; }
         .admin-btn:hover { background-color: #0056b3; }
         .logout-btn { background-color: #dc3545; display: none; }
@@ -22,7 +30,6 @@
         .match { background: #fff; border: 2px solid #e9ecef; border-radius: 8px; padding: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); position: relative; }
         .match-title { font-size: 0.8rem; color: #888; text-align: center; margin-bottom: 5px; font-weight: bold; }
         
-        /* تصميم اللاعبين والشارات */
         .player { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; margin: 4px 0; border-radius: 4px; cursor: pointer; border: 2px solid transparent; background-color: #f8f9fa; font-size: 0.95rem; font-weight: 600; transition: all 0.2s; }
         .admin-mode .player:hover { border-color: #007bff; background-color: #e9ecef; }
         .winner { background-color: #d4edda !important; border-color: #28a745 !important; color: #155724; }
@@ -31,7 +38,6 @@
         .badge-win { background: #28a745; }
         .badge-lose { background: #dc3545; }
 
-        /* تصميم قسم تفاصيل النقاط للمشاهدين */
         .details-btn { width: 100%; background: #e9ecef; border: none; color: #444; font-size: 0.8rem; cursor: pointer; padding: 5px; margin-top: 8px; border-radius: 4px; font-weight: bold; transition: 0.2s; }
         .details-btn:hover { background: #dee2e6; }
         .match-details { display: none; margin-top: 5px; padding: 8px; font-size: 0.85rem; background: #fff; border: 1px solid #dee2e6; border-radius: 4px; }
@@ -42,7 +48,6 @@
         .final-round h3 { background-color: #ffc107; color: #000; }
         .final-match { border-color: #ffc107; border-width: 3px; }
 
-        /* نافذة إدخال النتائج (Modal) */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 1000; }
         .modal-content { background: white; padding: 25px; border-radius: 12px; width: 90%; max-width: 400px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); text-align: center; }
         .modal-content h4 { background: #007bff; color: white; margin-top: 0; padding: 10px; border-radius: 8px; font-size: 1.1rem; }
@@ -66,6 +71,9 @@
 <body id="body">
 
     <div class="header">
+        <!-- إضافة شعار الجامعة -->
+        <img src="logo.png" alt="شعار جامعة جازان" class="uni-logo">
+        
         <h1 style="color: #333; margin-top: 0;">بطولة تنس الطاولة - جامعة جازان</h1>
         <button id="login-btn" class="admin-btn" onclick="loginAdmin()">تسجيل دخول الإدارة</button>
         <button id="logout-btn" class="admin-btn logout-btn" onclick="logoutAdmin()">تسجيل خروج</button>
@@ -198,7 +206,7 @@
     </div>
 
     <script>
-        // إعدادات Firebase الخاصة بك
+        // إعدادات Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyCb417CO425vn6wfvNoqxonWhbvhuwdSN4",
             authDomain: "pingpong-jazan.firebaseapp.com",
@@ -213,11 +221,8 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         let isAdmin = false;
-
-        // متغيرات النافذة
         let currentMatchId, currentNextTarget, currentIsSemi, currentLoserTarget, currentP1, currentP2;
 
-        // تهيئة الأسماء عند تحميل الصفحة
         document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.player').forEach(p => {
                 let txt = p.innerText.trim();
@@ -250,7 +255,6 @@
             document.getElementById('logout-btn').style.display = 'none';
         }
 
-        // فتح نافذة التحكيم
         function setWinner(matchId, clickedName, nextRoundTargetId, isSemiFinal = false, loserTargetId = null) {
             if (!isAdmin) {
                 alert("هذه الصفحة للمشاهدة فقط. سجل دخول كإدارة لتعديل النتائج.");
@@ -279,7 +283,6 @@
             document.getElementById('scoreModal').style.display = 'none';
         }
 
-        // مدقق قوانين تنس الطاولة
         function checkSet(p1, p2) {
             if (p1 === "" && p2 === "") return -1; 
             p1 = parseInt(p1); p2 = parseInt(p2);
@@ -289,7 +292,6 @@
             return 0;
         }
 
-        // حفظ النتيجة بالكامل شاملة تفاصيل النقاط
         function saveScore() {
             let sets1 = 0, sets2 = 0;
             let s1p1_val = document.getElementById('s1p1').value; let s1p2_val = document.getElementById('s1p2').value;
@@ -341,17 +343,14 @@
             }
         }
 
-        // دالة توسيع وإخفاء النقاط للمشاهدين
         function toggleDetails(matchId) {
             const detailsDiv = document.getElementById(`details-${matchId}`);
             if(detailsDiv) detailsDiv.classList.toggle('show');
         }
 
-        // استقبال التحديثات وبناء الجدول مع تفاصيل النقاط
         db.ref('table_tennis_bracket').on('value', (snapshot) => {
             const data = snapshot.val();
             
-            // 1. إعادة ضبط الجدول وإزالة حاويات التفاصيل القديمة
             document.querySelectorAll('.player').forEach(p => {
                 p.classList.remove('winner');
                 let def = p.getAttribute('data-default');
@@ -380,7 +379,6 @@
                     players[0].classList.toggle('winner', d.name === p1Name);
                     players[1].classList.toggle('winner', d.name === p2Name);
 
-                    // إضافة زر تفاصيل النقاط إذا كانت مسجلة
                     if (d.details) {
                         let detailsHTML = `<div class="details-container">
                             <button class="details-btn" onclick="toggleDetails('${matchId}')">النقاط بالتفصيل 🔽</button>
@@ -399,7 +397,6 @@
                         matchDiv.insertAdjacentHTML('beforeend', detailsHTML);
                     }
 
-                    // ترحيل الأسماء
                     if(d.nextTargetId) {
                         const nextTargetEl = document.getElementById(d.nextTargetId);
                         if(nextTargetEl) {
